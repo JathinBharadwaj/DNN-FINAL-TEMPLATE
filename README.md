@@ -1,4 +1,4 @@
-# Narrative Frame Prediction via Multimodal Deep Learning
+# Enhancing Multimodal Sequence Modelling with Cross-Modal Attention
 
 ## Quick Links
 
@@ -49,15 +49,13 @@ The system aims to:
 
 ---
 
-# Innovation Summary
-
-| # | Component        | Baseline      | Innovation                       | Justification                                       |
-| - | ---------------- | ------------- | -------------------------------- | --------------------------------------------------- |
-| 1 | Fusion           | Concatenation | Cross-Modal Attention            | Dynamic alignment between image and text embeddings |
-| 2 | Temporal Encoder | Basic LSTM    | Bidirectional Sequence Modelling | Improved temporal understanding                     |
-| 3 | Grounding        | None          | CoT Grounding + ROI Alignment    | Better entity consistency                           |
-| 4 | Explainability   | None          | Attention Visualisation + XAI    | Improved interpretability                           |
-
+Innovation Summary
+#	Component	Baseline	Innovation	Justification
+1	Fusion	Concatenation	Cross-Modal Attention	Dynamic alignment between image and text embeddings
+2	Temporal Model	Basic LSTM	Enhanced Sequence Modelling	Improved learning of temporal dependencies in sequences
+3	Modality Alignment	None	Cross-Modal Interaction	Stronger semantic consistency across image-text pairs
+4	Feature Learning	Static Features	Attention-Based Representation	Better contextual feature interaction across modalities
+5	Prediction Quality	Baseline Output	Improved Multimodal Prediction	More coherent and accurate next-frame generation
 ---
 
 # Cross-Modal Attention Fusion
@@ -200,16 +198,152 @@ Appends reasoning annotations to frame descriptions.
 
 ---
 
-# Training Pipeline
+## Training Pipeline
 
-The training process includes:
+The training pipeline is designed to learn multimodal representations from sequential image-text data and optimize cross-modal alignment for next-frame prediction.
 
-* Image reconstruction loss
-* Context reconstruction loss
+Start
+  │
+  ▼
+Load Dataset (K image-text sequences)
+  │
+  ▼
+Preprocessing
+(Image resize + Text tokenization)
+  │
+  ▼
+Feature Extraction
+ ┌──────────────────────┐
+ │ Visual Encoder (CNN) │
+ │ Text Encoder (BERT)  │
+ └──────────────────────┘
+  │
+  ▼
+Cross-Modal Attention Fusion
+(Dynamic alignment of image & text features)
+  │
+  ▼
+Temporal Sequence Model
+(BiLSTM / GRU)
+  │
+  ▼
+Prediction Heads
+ ┌──────────────────────┐
+ │ Image Decoder        │
+ │ Text Decoder         │
+ └──────────────────────┘
+  │
+  ▼
+Loss Computation
+(Reconstruction + Alignment + Temporal loss)
+  │
+  ▼
+Backpropagation + Optimization (Adam)
+  │
+  ▼
+Validation & Evaluation
+  │
+  ▼
+Save Best Model Checkpoint
+  │
+  ▼
+End
+
+---
+
+### 1. Data Loading and Preprocessing
+
+* Load sequences of **K image-text pairs** from the dataset
+* Resize and normalize images for CNN input
+* Tokenize text descriptions using a transformer tokenizer
+* Construct fixed-length temporal sequences
+* Prepare ground-truth **(K+1)** target image-text pair
+
+---
+
+### 2. Feature Extraction
+
+* **Visual Encoder:** Extract visual embeddings from images using a CNN-based backbone
+* **Text Encoder:** Extract contextual text embeddings using a transformer (e.g., BERT)
+* Align both modalities into a shared embedding space
+
+---
+
+### 3. Cross-Modal Attention Fusion
+
+* Apply cross-modal attention between visual and textual embeddings
+* Learn dynamic interactions between modalities
+* Generate fused multimodal representations for each frame
+
+---
+
+### 4. Temporal Sequence Modelling
+
+* Pass fused embeddings through a sequence model (e.g., LSTM/GRU)
+* Capture temporal dependencies across the sequence of frames
+* Optionally apply bidirectional processing for improved context understanding
+
+---
+
+### 5. Prediction Heads
+
+* **Image Decoder Head:** Predict features of the next image frame
+* **Text Decoder Head:** Generate the next caption or description
+* Produce final multimodal output for frame **K+1**
+
+---
+
+### 6. Loss Functions
+
+The model is trained using a combination of losses:
+
+* Reconstruction loss (image prediction)
 * Text generation loss
-* Re-identification consistency loss
-* Contrastive grounding loss
-* Entity consistency regularisation
+* Cross-modal alignment loss
+* Temporal consistency loss
+* (Optional) contrastive loss for better grounding
+
+---
+
+### 7. Optimization
+
+* Backpropagation through the full multimodal network
+* Optimizer: Adam / AdamW
+* Learning rate scheduling for stable convergence
+* Gradient clipping to avoid exploding gradients
+
+---
+
+### 8. Training Loop
+
+For each epoch:
+
+1. Load batch of sequential samples
+2. Encode image and text features
+3. Apply cross-modal attention fusion
+4. Model temporal dependencies
+5. Predict next image-text pair
+6. Compute total loss
+7. Backpropagate and update weights
+
+---
+
+### 9. Validation
+
+* Evaluate model on unseen sequences
+* Measure prediction accuracy and multimodal coherence
+* Track training vs validation loss
+* Monitor convergence stability
+
+---
+
+### 10. Output
+
+* Trained model checkpoints saved periodically
+* Best model selected based on validation performance
+* Final model used for multimodal next-frame prediction
+
+---
 
 ---
 
@@ -270,36 +404,97 @@ DNN-FINAL-TEMPLATE/
 # Configuration (`config.yaml`)
 
 ```yaml
+data:
+dataset_name: "daniel3303/StoryReasoning"
+context_frames: 4
+image_height: 60
+image_width: 125
+max_text_len: 120
+
+dataloader:
+train_batch_size: 8
+val_batch_size: 4
+test_batch_size: 4
+shuffle_train: true
+shuffle_val: true
+shuffle_test: false
+
 training:
-  epochs: 20
-  batch_size: 8
-  learning_rate: 0.001
+epochs: 20
+learning_rate: 0.001
+device: "cuda"
+seed: 42
+
+optimizer:
+type: "Adam"
+lr: 0.001
+
+loss:
+image_loss: "L1Loss"
+context_loss: "MSELoss"
+text_loss: "CrossEntropyLoss"
 
 model:
-  latent_dim: 16
-  embedding_dim: 16
-  hidden_dim: 16
-  num_layers: 1
-  dropout: true
+latent_dim: 16
+embedding_dim: 16
+gru_hidden_dim: 16
+num_layers: 1
+dropout: true
 
-dataset:
-  image_size:
-    height: 60
-    width: 125
-  context_frames: 4
-  max_text_length: 120
+text_encoder:
+vocab_size: 30522
+embedding_dim: 16
+hidden_dim: 16
+num_layers: 1
+dropout: 0.1
 
-cot_grounding:
-  use_frame_aware_grounding: true
-  use_contrastive_roi: true
-  use_entity_pooling: true
-  use_cot_text: true
+text_decoder:
+vocab_size: 30522
+embedding_dim: 16
+hidden_dim: 16
+num_layers: 1
+dropout: 0.1
+
+visual_encoder:
+latent_dim: 16
+output_w: 16
+output_h: 8
+
+attention:
+use_attention: true
+
+cot:
+use_frame_aware_grounding: true
+use_contrastive_roi: true
+use_entity_pooling: true
+use_cot_text: true
+
+contrastive:
+temperature: 0.07
 
 loss_weights:
-  lambda_reid: 0.10
-  lambda_ground_mse: 0.10
-  lambda_contrast: 0.10
-  lambda_entity_pool: 0.05
+lambda_reid: 0.10
+lambda_ground_mse: 0.10
+lambda_contrast: 0.10
+lambda_entity_pool: 0.05
+
+checkpoint:
+save_dir: "/content/gdrive/MyDrive/DL_Checkpoints"
+text_autoencoder_file: "text_autoencoder.pth"
+
+huggingface:
+bert_model: "google-bert/bert-base-uncased"
+
+baseline_experiment:
+epochs: 20
+
+attention_experiment:
+epochs: 20
+
+pretrained_experiment:
+freeze_bert: true
+epochs: 20
+
 ```
 
 ---
@@ -307,18 +502,17 @@ loss_weights:
 # Requirements (`requirements.txt`)
 
 ```text
-torch
-torchvision
-transformers
-datasets
-matplotlib
-numpy
-beautifulsoup4
-google-colab
-Pillow
-scikit-learn
-tqdm
-pyyaml
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.35.0
+datasets>=2.14.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+beautifulsoup4>=4.12.0
+Pillow>=9.5.0
+pyyaml>=6.0
+tqdm>=4.66.0
+scikit-learn>=1.3.0
 ```
 
 ---
@@ -334,7 +528,7 @@ pip install -r requirements.txt
 ## Launch notebook
 
 ```bash
-jupyter notebook experiments.ipynb
+jupyter notebook Final_Assessment_Template_ jathin.ipynb
 ```
 
 ## Train model
