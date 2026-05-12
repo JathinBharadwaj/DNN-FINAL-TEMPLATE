@@ -276,7 +276,7 @@ DNN-FINAL-TEMPLATE/
 ├── README.md
 ├── DNN-FINAL-TEMPLATE.ipynb
 ├── Requirements.txt
-├── config.yaml.txt
+├── config.yaml
 │
 ├── src/
 │   ├── architecture.py
