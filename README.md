@@ -279,7 +279,6 @@ DNN-FINAL-TEMPLATE/
 ├── config.yaml
 │
 ├── src/
-│   ├── architecture.py
 │   ├── model.py
 │   ├── train.py
 │   ├── utils.py
