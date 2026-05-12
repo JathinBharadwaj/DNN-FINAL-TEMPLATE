@@ -2,15 +2,12 @@
 
 ## Quick Links
 
-* **Experiments Notebook** – `experiments.ipynb`
-* **Model Architectures** – `src/architecture.py`
-* **Training Pipeline** – `src/runner.py`
-* **Utilities & Preprocessing** – `src/helpers.py`
-* **XAI Outputs** – `outputs/xai/`
-* **Saved Models** – `saved_models/`
-
+* **Experiments Notebook** – `Final_Assessment_Template_ jathin.ipynb`
+* **Model Architectures** – `src/model.py`
+* **Training Pipeline** – `src/train.py`
+* **Utilities & Preprocessing** – `src/utils.py`
+* **Outputs** – `DNN Outputs/`
 ---
-
 # Project Overview
 
 This project focuses on **multimodal sequence modelling for visual story reasoning** using deep learning.
