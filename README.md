@@ -226,34 +226,6 @@ The training process includes:
 
 ---
 
-# Explainability (XAI)
-
-The project supports multimodal explainability using:
-
-## 1. Attention Visualisation
-
-Shows temporal importance across narrative frames.
-
-## 2. ROI Grounding Visualisation
-
-Displays grounded entities and bounding boxes.
-
-## 3. Integrated Gradients
-
-Highlights influential image regions.
-
-## 4. Grad-CAM++
-
-Spatial attention maps over visual predictions.
-
-Outputs are saved inside:
-
-```text
-outputs/xai/
-```
-
----
-
 # Technologies Used
 
 * Python
